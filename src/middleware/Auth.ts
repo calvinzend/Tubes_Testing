@@ -28,7 +28,7 @@ const authMiddleware = middlewareWrapper(
       req.user = {
         id: decoded.id,
         email: decoded.email || "",
-      };
+      } as any;
 
       // next();
     } catch (jwtError) {
