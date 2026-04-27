@@ -48,6 +48,7 @@ describe('Experiences Routes Testing', () => {
 			});
 
 		expect(res.status).toBe(200);
+		applierExperienceId = String(res.body.data.experience_id);
 	});
 
 	it('Update applier experience', async () => {
@@ -104,6 +105,7 @@ describe('Experiences Routes Testing', () => {
 			});
 
 		expect(res.status).toBe(200);
+		recruiterExperienceId = String(res.body.data.experience_id);
 	});
 
 	it('Update recruiter experience', async () => {
