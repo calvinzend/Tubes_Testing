@@ -152,6 +152,7 @@ describe('Job Routes Testing (Create Post + Apply Job)', () => {
 			});
 
 		expect(res.status).toBe(201);
+		createdJobIdForApply = String(res.body.jobPost.job_id);
 	});
 
 	it('Apply for a job', async () => {
