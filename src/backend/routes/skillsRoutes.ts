@@ -118,7 +118,7 @@ router.post("/appliers-skills/create", authMiddleware, controllerWrapper(async (
 
 router.delete("/appliers-skills/:skill_id", authMiddleware, controllerWrapper(async (req, res) => {
     const applierId = req.user?.id;
-    const skillId = parseInt(req.params.skill_id, 10);
+    const skillId = parseInt(req.params.skill_id as string, 10);
 
     if (!applierId || isNaN(skillId)) {
         throw new Error("Invalid request parameters.");

@@ -47,7 +47,7 @@ router.get("/appliers", controllerWrapper(async (req, res) => {
     }
 
     const applier = await Appliers.findOne({
-        where: { user_id: applierId },
+        where: { applier_id: applierId },
     });
 
     if (!applier) {
@@ -101,7 +101,7 @@ router.get("/appliers/:id", controllerWrapper(async (req, res) => {
 router.get("/recruiters/:id", controllerWrapper(async (req, res) => {
     const recruiterId = req.params.id;
     if (!recruiterId) {
-        throw new Error("Applier ID is required.");
+        throw new Error("Recruiter ID is required.");
     }
 
     const recruiter = await Recruiters.findOne({
@@ -116,11 +116,11 @@ router.get("/recruiters/:id", controllerWrapper(async (req, res) => {
     });
 
     if (!recruiter) {
-        throw new Error("Applier not found.");
+        throw new Error("Recruiter not found.");
     }
 
     return {
-        message: "Applier profile retrieved successfully.",
+        message: "Recruiter profile retrieved successfully.",
         data: recruiter,
     }
 }));
@@ -133,14 +133,6 @@ router.get("/recruiters", controllerWrapper(async (req, res) => {
 
     const recruiter = await Recruiters.findOne({
         where: { recruiter_id: recruiterId },
-        include: [
-            {
-                model: Skills,
-                as: "skills",
-                attributes: ["skill_id", "name"],
-                through: { attributes: [] },
-            },
-        ],
     });
 
     if (!recruiter) {
@@ -199,7 +191,7 @@ router.post("/appliers-skills", authMiddleware, controllerWrapper(async (req, re
     }
 
     const applierWithSkills = await Appliers.findOne({
-        where: { user_id: applier_id },
+        where: { applier_id },
         include: [{
             model: Skills,
             as: "skills",
@@ -218,7 +210,6 @@ router.post("/appliers-skills", authMiddleware, controllerWrapper(async (req, re
             const [skillInstance] = await Skills.findOrCreate({
                 where: { name: skillName },
                 defaults: {
-                    skill_id: v4(),
                     name: skillName
                 }
             });
@@ -267,9 +258,9 @@ router.post("/experiences", authMiddleware, controllerWrapper(async (req, res) =
 
     let user;
     if (user_type === 'applier') {
-        user = await Appliers.findOne({ where: { user_id } });
+        user = await Appliers.findOne({ where: { applier_id: user_id } });
     } else {
-        user = await Recruiters.findOne({ where: { user_id } });
+        user = await Recruiters.findOne({ where: { recruiter_id: user_id } });
     }
 
     if (!user) {
@@ -322,7 +313,7 @@ router.get("/experiences", controllerWrapper(async (req, res) => {
 }));
 
 router.put("/experiences/:experience_id", controllerWrapper(async (req, res) => {
-    const { experience_id } = req.params;
+    const { experience_id } = req.params as { experience_id: string };
     const {
         company_name,
         job_title,
@@ -352,7 +343,7 @@ router.put("/experiences/:experience_id", controllerWrapper(async (req, res) => 
 }));
 
 router.delete("/experiences/:experience_id", controllerWrapper(async (req, res) => {
-    const { experience_id } = req.params;
+    const { experience_id } = req.params as { experience_id: string };
 
     const experience = await Experiences.findByPk(experience_id);
 

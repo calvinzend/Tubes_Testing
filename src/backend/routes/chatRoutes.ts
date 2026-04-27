@@ -310,14 +310,14 @@ const router = express.Router();
 // Middleware to check chat access
 const chatAccessMiddleware = middlewareWrapper(async (req, res, next) => {
   // Get chat ID from URL params
-  const chatId = req.params.chat_id;
+  const chatId = req.params.chat_id as string;
 
   if (!chatId) {
     throw new Error("Chat ID is required");
   }
 
   // Read the chat data
-  const chatData = await readChatJson(chatId);
+  const chatData = await readChatJson(chatId as string);
 
   if (!chatData) {
     throw new Error("Chat not found");
@@ -415,7 +415,7 @@ router.get('/chats/:chat_id', authMiddleware, chatAccessMiddleware, controllerWr
 // Send message in a chat
 router.post("/chats/:chat_id/messages", authMiddleware, chatAccessMiddleware, controllerWrapper(async (req, res) => {
   const userId = req.user?.id;
-  const chatId = req.params.chat_id;
+  const chatId = req.params.chat_id as string;
   const { message, messageType = "TEXT" } = req.body;
 
   if (!message) {
@@ -443,7 +443,7 @@ router.post("/chats/:chat_id/messages", authMiddleware, chatAccessMiddleware, co
 
   // Add message to JSON file
   try {
-    await addMessageToChat(chatId, newMessage);
+    await addMessageToChat(chatId as string, newMessage);
   } catch (error) {
     console.error("Error adding message to chat:", error);
     throw new Error(`Failed to add message: ${error}`);
@@ -548,7 +548,7 @@ router.post("/chats/:chat_id/attachment",
   uploadAttachment.single('file'),
   controllerWrapper(async (req, res) => {
     const userId = req.user?.id;
-    const chatId = req.params.chat_id;
+    const chatId = req.params.chat_id as string;
     const { file } = req;
 
     if (!userId) {
@@ -673,7 +673,7 @@ router.get("/attachments/:attachmentId/:filename", fileControllerWrapper(async (
   userId = decoded.id;
 
 
-  const { attachmentId, filename } = req.params;
+  const { attachmentId, filename } = req.params as { attachmentId: string; filename: string };
 
   // Find which chat this attachment belongs to
   const chat = await findChatByAttachmentId(attachmentId);
@@ -712,12 +712,12 @@ router.get("/attachments/:attachmentId/:filename", fileControllerWrapper(async (
 
   // For download vs viewing in browser
   if (ext === '.pdf') {
-    res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(filename)}"`);
+  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(filename as string)}"`)
   } else {
-    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename as string)}"`)
   }
 
-  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename as string)}"`);
 
   // Use the Promise-based function to serve the file
   await serveFile(filePath, res);
@@ -725,7 +725,7 @@ router.get("/attachments/:attachmentId/:filename", fileControllerWrapper(async (
 
 router.post("/chats/:chat_id/interview", authMiddleware, chatAccessMiddleware, controllerWrapper(async (req, res) => {
   const userId = req.user?.id;
-  const chatId = req.params.chat_id;
+  const chatId = req.params.chat_id as string;
   const { interviewDetails, job_id } = req.body;
 
   if (!interviewDetails) {
@@ -752,14 +752,14 @@ router.post("/chats/:chat_id/interview", authMiddleware, chatAccessMiddleware, c
   };
 
   // Add message to JSON file
-  await addMessageToChat(chatId, newMessage);
+  await addMessageToChat(chatId as string, newMessage);
 
   // Update chat with latest message info
-  const chatData = await readChatJson(chatId);
+  const chatData = await readChatJson(chatId as string);
   if (chatData) {
     chatData.last_message = `[INTERVIEW] ${new Date(interviewDetails.date).toLocaleString()}`;
     chatData.updated_at = new Date().toISOString();
-    await fs.writeFile(getChatFilePath(chatId), JSON.stringify(chatData, null, 2), 'utf8');
+    await fs.writeFile(getChatFilePath(chatId as string), JSON.stringify(chatData, null, 2), 'utf8');
   }
 
   return {
@@ -770,12 +770,12 @@ router.post("/chats/:chat_id/interview", authMiddleware, chatAccessMiddleware, c
 
 // Update the message PATCH endpoint to be consistent with other chat routes
 router.patch("/chats/:chat_id/messages/:message_id", authMiddleware, chatAccessMiddleware, controllerWrapper(async (req, res) => {
-  const chatId = req.params.chat_id;
-  const messageId = req.params.message_id;
+  const chatId = req.params.chat_id as string;
+  const messageId = req.params.message_id as string;
   const { content, status } = req.body;
 
   // Read the chat file
-  const chatData = await readChatJson(chatId);
+  const chatData = await readChatJson(chatId as string);
   if (!chatData) {
     throw new Error("Chat not found");
   }
@@ -796,7 +796,7 @@ router.patch("/chats/:chat_id/messages/:message_id", authMiddleware, chatAccessM
   }
 
   // Save the updated chat
-  await fs.writeFile(getChatFilePath(chatId), JSON.stringify(chatData, null, 2), 'utf8');
+  await fs.writeFile(getChatFilePath(chatId as string), JSON.stringify(chatData, null, 2), 'utf8');
 
   // If this is an interview message, update the corresponding interview schedule
   if (chatData.messages[messageIndex].message_type === 'INTERVIEW_REQUEST') {

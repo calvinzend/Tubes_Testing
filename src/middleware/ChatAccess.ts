@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Chats } from '../../models/chats';
+import { Chats } from '../../models/';
 import { JobAppliers } from '../../models/job_appliers';
 import { middlewareWrapper } from '../utils/middlewareWrapper';
 
