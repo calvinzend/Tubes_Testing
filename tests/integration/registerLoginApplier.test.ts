@@ -70,3 +70,4 @@ describe('AUTH INTEGRATION TEST', () => {
     expect(res.status).not.toBe(200);
   });
 });
+

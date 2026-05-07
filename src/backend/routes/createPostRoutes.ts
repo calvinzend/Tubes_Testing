@@ -182,9 +182,9 @@ router.post("/jobposts", authMiddleware, controllerWrapper(async (req, res) => {
 
     }
 
-    const response = {
+    return res.status(201).json({
       message: "Job post created successfully",
-      jobPost: {
+      data: {
         job_id: jobPost.job_id,
         title: jobPost.title,
         description: jobPost.description,
@@ -196,9 +196,7 @@ router.post("/jobposts", authMiddleware, controllerWrapper(async (req, res) => {
         salary_type: jobPost.salary_type,
         skills: skills || []
       }
-    };
-
-    return res.status(201).json(response);
+    });
 
   } catch (error) {
     return res.status(500).json({
@@ -550,7 +548,7 @@ router.put('/jobs/:jobId', authMiddleware, controllerWrapper(async (req, res) =>
 
     const [updatedCount] = await JobPosts.update(updateData, {
       where: { job_id: jobId },
-      returning: true
+      // returning: true
     });
 
     if (updatedCount === 0) {
