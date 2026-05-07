@@ -90,8 +90,8 @@ describe('Job Routes Testing (Create Post + Apply Job)', () => {
 			});
 
 		expect(res.status).toBe(201);
-
-		createdJobIdForCrud = String(res.body.jobPost.job_id);
+		expect(res.body?.data?.job_id).toBeDefined();
+		createdJobIdForCrud = String(res.body.data.job_id);
 	});
 
 	it('Get all jobs', async () => {
@@ -152,7 +152,8 @@ describe('Job Routes Testing (Create Post + Apply Job)', () => {
 			});
 
 		expect(res.status).toBe(201);
-		createdJobIdForApply = String(res.body.jobPost.job_id);
+		expect(res.body?.data?.job_id).toBeDefined();
+		createdJobIdForApply = String(res.body.data.job_id);
 	});
 
 	it('Apply for a job', async () => {
